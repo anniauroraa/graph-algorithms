@@ -3,15 +3,59 @@
 
 import graph
 import sys
+from queue import Queue
 
 ## Implement your algorithm here:
-def algorithm(g, B, v, w):
+def algorithm(g, B, s, e):
 
   print("adj:", g.adj)
   print("w: ", g.w)
   print("B:", B)
-  print("start & end:", v, w)
-  return 0
+  print("start & end:", s, e)
+  print("-----------")
+
+  distances = []
+
+  # mark initial distance None
+  for u in range(len(g.adj)):
+    distances.append(None)
+
+  # starting point
+  distances[s] = 0
+  print(distances)
+
+  # FIFO queue
+  queue = Queue()
+  queue.put(s)
+
+  connections = {}
+
+  # Breadth first algorithm
+  while queue.empty() == False:     # change to the end vertice
+    u = queue.get()
+    print("dequeued:", u)
+    for v in g.adj[u]:
+      if distances[v] == None:
+        print(f"new edge: ({u}, {v})")
+        distances[v] = distances[u] + 1
+        connections[v] = u
+        queue.put(v)
+      
+      if v == e:
+        print("end found")
+
+  print("connections: ")
+  print(connections)
+
+  vertices = 1
+  next = connections[e]
+  while next != s:
+    print(next)
+    next = connections[next]
+    vertices += 1
+
+  string = f"Minimum amount of vertices from {s} to {e} is: "
+  return string + str(vertices)
 
 
 ### Read in a set of vertices from a file. These are just numbers separated by whitespace.
