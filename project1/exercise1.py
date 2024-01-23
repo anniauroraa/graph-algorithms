@@ -37,11 +37,6 @@ def algorithm(g, B, s, e):
   while u != e:     
     print("dequeued:", u)
 
-    # detect B vertices
-    if u in B:
-      print(f"B vertice found: {u}, distance {distances[u]}")
-      b_on_path.append([u, distances[u]])
-
     for v in g.adj[u]:
       if distances[v] == None:
         print(f"new edge: ({u}, {v})")
@@ -50,12 +45,12 @@ def algorithm(g, B, s, e):
         queue.put(v)
 
       # log alternative paths that maximize Bs in shortest path
-      else:
+      elif distances[v] == distances[u] + 1:
         alt_path[v] = u
         print(f"alternative path found: ({u} -> {v})")
-      
-      if v == e:
-        print("end found")
+
+      else:
+        print(f"Edge ({u}, {v}) ot part of the shortest route")
     
     # move along in the list
     u = queue.get()
@@ -66,11 +61,18 @@ def algorithm(g, B, s, e):
   print("alternative paths:")
   print(alt_path)
 
-  vertices = 0
+  min_path = 1
+  next = path[e]
+  while next != s:
+    print(next)
+    next = path[next]
+    min_path += 1
 
-  string = f"Minimum amount of vertices from {s} to {e} is: "
-  return string + str(vertices)
+  max_b = 0
 
+  str1 = f"Shortest path from {s} to {e} is: {min_path}\n"
+  str2 = f"Maximum amout edges in any shortest path: {max_b}"
+  return str1 + str2
 
 ### Read in a set of vertices from a file. These are just numbers separated by whitespace.
 def readset(filename):
