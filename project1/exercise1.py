@@ -8,71 +8,49 @@ from queue import Queue
 ## Implement your algorithm here:
 def algorithm(g, B, s, e):
 
-  print("adj:", g.adj)
-  print("w: ", g.w)
+  print("neighbors:", g.adj)
+  print("weighted: ", g.w)
   print("B:", B)
   print("start & end:", s, e)
   print("-----------")
 
-  distances = []
-
-  # mark initial distance None
-  for u in range(len(g.adj)):
-    distances.append(None)
-
   # starting point
-  distances[s] = 0
-  print(distances)
+  visited = []
+  max_b = 0
+  queue = Queue()   # FIFO
 
-  # FIFO queue
-  queue = Queue()
-  queue.put(s)
-
-  path = {}
-  alt_path = {}
-  b_on_path = []
+  # initialize algorithm with starting point s
+  visited.append(s)
+  if s in B:
+    queue.put((s,1))
+  else:
+    queue.put((s,0))
 
   # Breadth first algorithm
-  u = queue.get()
-  while u != e:     
-    print("dequeued:", u)
+  while not queue.empty():     
+    u, b_count = queue.get()
+    print("current B count:", b_count)
 
     for v in g.adj[u]:
-      if distances[v] == None:
+      if v not in visited:
+        visited.append(v)
         print(f"new edge: ({u}, {v})")
-        distances[v] = distances[u] + 1
-        path[v] = u
-        queue.put(v)
+        new_b_count = b_count
+        if v in B:
+          new_b_count += 1
 
-      # log alternative paths that maximize Bs in shortest path
-      elif distances[v] == distances[u] + 1:
-        alt_path[v] = u
-        print(f"alternative path found: ({u} -> {v})")
+        queue.put((v, new_b_count))
+      if v == e:
+        # end found from a neighbor, update max count
+        max_b = max(max_b, b_count)
+        print(f"compare: B count = {b_count}, max_b = {max_b}")
 
-      else:
-        print(f"Edge ({u}, {v}) ot part of the shortest route")
-    
-    # move along in the list
-    u = queue.get()
+  # consider if e was part of B
+  if e in B:
+    max_b += 1
 
-  print("----------")
-  print("path: ")
-  print(path)
-  print("alternative paths:")
-  print(alt_path)
-
-  min_path = 1
-  next = path[e]
-  while next != s:
-    print(next)
-    next = path[next]
-    min_path += 1
-
-  max_b = 0
-
-  str1 = f"Shortest path from {s} to {e} is: {min_path}\n"
-  str2 = f"Maximum amout edges in any shortest path: {max_b}"
-  return str1 + str2
+  print("-----------")
+  return max_b
 
 ### Read in a set of vertices from a file. These are just numbers separated by whitespace.
 def readset(filename):
@@ -106,6 +84,6 @@ if __name__ == "__main__":
   n = algorithm(g, B, v, w)
 
   # Print the result:
-  print(n)
+  print(f"Maximum amout of B vertices in any shortest path: {n}")
   
 
