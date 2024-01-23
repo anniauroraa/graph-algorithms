@@ -28,31 +28,45 @@ def algorithm(g, B, s, e):
   queue = Queue()
   queue.put(s)
 
-  connections = {}
+  path = {}
+  alt_path = {}
+  b_on_path = []
 
   # Breadth first algorithm
-  while queue.empty() == False:     # change to the end vertice
-    u = queue.get()
+  u = queue.get()
+  while u != e:     
     print("dequeued:", u)
+
+    # detect B vertices
+    if u in B:
+      print(f"B vertice found: {u}, distance {distances[u]}")
+      b_on_path.append([u, distances[u]])
+
     for v in g.adj[u]:
       if distances[v] == None:
         print(f"new edge: ({u}, {v})")
         distances[v] = distances[u] + 1
-        connections[v] = u
+        path[v] = u
         queue.put(v)
+
+      # log alternative paths that maximize Bs in shortest path
+      else:
+        alt_path[v] = u
+        print(f"alternative path found: ({u} -> {v})")
       
       if v == e:
         print("end found")
+    
+    # move along in the list
+    u = queue.get()
 
-  print("connections: ")
-  print(connections)
+  print("----------")
+  print("path: ")
+  print(path)
+  print("alternative paths:")
+  print(alt_path)
 
-  vertices = 1
-  next = connections[e]
-  while next != s:
-    print(next)
-    next = connections[next]
-    vertices += 1
+  vertices = 0
 
   string = f"Minimum amount of vertices from {s} to {e} is: "
   return string + str(vertices)
