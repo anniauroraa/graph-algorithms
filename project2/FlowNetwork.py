@@ -26,6 +26,7 @@ def SumFlow(f1,f2):
 class FlowNetwork:
   def __init__(self,G) -> None:
     self.G = G
+    # print(self.G.w)
     self.FindSource()
     self.FindSink()
   ## Find the source, it is the first vertex with a non-empty adjacency list:
@@ -129,27 +130,54 @@ class FlowNetwork:
 
   def MinCutEdges(self):
     f = self.FordFulkerson()
-    print("flow is " + str(f))
-    print("------------------")
-    max_flow = 0
-    
-    Gr = self.MakeResidual(f)
+    # print("flow is " + str(f))
+    # print("------------------")
+    # print("residual:")
+    # print(self.G.w)
+
     flow = self.FlowValue(f)
     print("max flow is " + str(flow))
 
     ### Find the cut (S,T) by finding the set S.
-    S = set()
+    S = []
+
+    # starting point
+    visited = []
+    queue = Queue()   # FIFO
+
+    # initialize algorithm with starting point s
+    visited.append(self.s)
+    queue.put(self.s)
+    S.append(self.s)
+
+    # Breadth first algorithm
+    while not queue.empty():     
+      current = queue.get()
+      for neighbor in self.G.adj[current]:
+        # compare edge capacity to the flow running through it. If 0, don't add to S
+        if (current, neighbor) in f and self.G.w[(current, neighbor)] - f[(current, neighbor)] == 0: 
+          continue
+        else:
+          if neighbor not in S:
+            S.append(neighbor)  
+            queue.put(neighbor)
+          if current not in S:
+            S.append(current)
+    # print(S)
 
     ## Return the edges that cross the cut:
     # Edges = [(u,v) for u in S for v in G.adj[u] if v not in S]
     # Iterate over vertices in S and their adjacent vertices
     edges = []
+    weight_sum = 0
     for u in S:
         # Iterate over adjacent vertices of u
         for v in self.G.adj[u]:
             # Check if the edge (u, v) crosses the cut (S, T)
-            if v not in S:
+            if v not in S and (u,v) in f:
+                weight_sum += self.G.w[(u,v)]
                 edges.append((u, v))
+    print(f"flow through the min cut is {weight_sum}")
 
     ### Find the edges that cross the cut (S,T), i.e., they start from S and end in T.
     ### Return these edges.
@@ -159,14 +187,7 @@ if __name__ == "__main__":
     G = Graph()
     inputgraph = sys.argv[1]
     G.readgraph(inputgraph)
-    # print(G.adj)
-    # print(G.w)
-    # print(G.w[(1,17)])
     F = FlowNetwork(G)
-    print('s is ' + str(F.s))
-    print('t is ' + str(F.t))
-
-
     edges = F.MinCutEdges()
 
     print("------------------")
