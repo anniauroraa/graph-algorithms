@@ -3,6 +3,10 @@ from queue import Queue
 import sys
 
 # INSTRUCTIONS: run on terminal: "python game_prediction.py [testfile1.txt]"
+# graph.fixed.py needs to be in the same folder for the import to work.
+
+# IMPLEMENTATION: This is an algorithm for forecasting the average end result for the game Tattle Tail.
+# The implementation utilizes Brandes Cenrality algorithm
 
 class PredictionNetwork:
     def __init__(self,G) -> None:
