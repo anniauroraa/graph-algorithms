@@ -3,10 +3,10 @@ from queue import Queue
 import sys
 
 # INSTRUCTIONS: run on terminal: "python game_prediction.py [testfile1.txt]"
-# graph.fixed.py needs to be in the same folder for the import to work.
+# graph_fixed.py needs to be in the same folder for the import to work.
 
 # IMPLEMENTATION: This is an algorithm for forecasting the average end result for the game Tattle Tail.
-# The implementation utilizes Brandes Cenrality algorithm
+# The implementation utilizes Brandes Centrality algorithm
 
 class PredictionNetwork:
     def __init__(self,G) -> None:
@@ -77,7 +77,8 @@ class PredictionNetwork:
                 # delta magic equation
                 delta[pred] += (sigma[(s,pred)]/sigma[(s,succ)])*(1+delta[succ])
             # print(f"centrality for {succ}: {self.centralities[succ]} + {delta[succ]}\n")
-            self.centralities[succ] += delta[succ]
+            if succ != s:
+                self.centralities[succ] += delta[succ]
         return
     
 
